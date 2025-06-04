@@ -2,13 +2,7 @@ body {
     background-color: #f8f9fa;
     font-family: 'Inter', sans-serif;
   }
-  
-  .sidebar {
-    min-height: 100vh;
-    background-color: #fff;
-    border-right: 1px solid #dee2e6;
-  }
-  
+
   .nav-link.active {
     font-weight: bold;
     background-color: #e9ecef;
