@@ -229,6 +229,80 @@ app.delete('/api/collaborators/:id', async (req, res) => {
   }
 });
 
+// Get all shelters
+app.get('/api/shelters', async (req, res) => {
+  try {
+    const data = await readDataFile();
+    res.json(data.shelters || []);
+  } catch (error) {
+    console.error('Error reading shelters:', error);
+    res.status(500).json({ error: 'Failed to read shelters' });
+  }
+});
+
+// Get specific shelter
+app.get('/api/shelters/:id', async (req, res) => {
+  try {
+    const data = await readDataFile();
+    const shelter = data.shelters?.find(s => s.id === req.params.id);
+    
+    if (!shelter) {
+      return res.status(404).json({ error: 'Shelter not found' });
+    }
+    
+    res.json(shelter);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to read shelter' });
+  }
+});
+
+// Create or update shelter
+app.post('/api/shelters', async (req, res) => {
+  try {
+    const data = await readDataFile();
+    
+    // Initialize shelters array if it doesn't exist
+    if (!data.shelters) {
+      data.shelters = [];
+    }
+    
+    const newShelter = req.body;
+    
+    // Check if shelter exists (update) or is new (create)
+    const index = data.shelters.findIndex(s => s.id === newShelter.id);
+    
+    if (index !== -1) {
+      // Update existing shelter
+      data.shelters[index] = newShelter;
+    } else {
+      // Create new shelter
+      data.shelters.push(newShelter);
+    }
+    
+    await writeDataFile(data);
+    res.json(newShelter);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to save shelter' });
+  }
+});
+
+// Delete shelter
+app.delete('/api/shelters/:id', async (req, res) => {
+  try {
+    const data = await readDataFile();
+    
+    if (!data.shelters) {
+      return res.json({ success: true });
+    }
+    
+    data.shelters = data.shelters.filter(s => s.id !== req.params.id);
+    await writeDataFile(data);
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete shelter' });
+  }
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);

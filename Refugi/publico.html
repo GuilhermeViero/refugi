@@ -94,18 +94,33 @@
   <div class="modal-dialog">
     <form class="modal-content" id="formAbrigo">
       <div class="modal-header">
-        <h5 class="modal-title">Abrigo</h5>
+        <h5 class="modal-title">Novo Abrigo</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <input type="hidden" name="index" />
-        <input class="form-control mb-2" name="nome" placeholder="Nome do Abrigo" required />
-        <input class="form-control mb-2" name="capacidade" type="number" placeholder="Capacidade Total" required />
-        <input class="form-control mb-2" name="ocupado" type="number" placeholder="Ocupado Agora" required />
-        <input class="form-control mb-2" name="suprimentos" placeholder="Suprimentos Críticos (ex: Água, Cobertor)" required />
-        <textarea class="form-control mb-2" name="mensagem" placeholder="Última Mensagem" rows="2" required></textarea>
+        <div class="mb-3">
+          <label for="nome" class="form-label">Nome do Abrigo</label>
+          <input class="form-control" name="nome" id="nome" required />
+        </div>
+        <div class="mb-3">
+          <label for="capacidade" class="form-label">Capacidade Total</label>
+          <input class="form-control" name="capacidade" id="capacidade" type="number" required />
+        </div>
+        <div class="mb-3">
+          <label for="ocupado" class="form-label">Ocupado Agora</label>
+          <input class="form-control" name="ocupado" id="ocupado" type="number" required />
+        </div>
+        <div class="mb-3">
+          <label for="suprimentos" class="form-label">Suprimentos Críticos</label>
+          <input class="form-control" name="suprimentos" id="suprimentos" placeholder="Ex: Água, Cobertor" required />
+        </div>
+        <div class="mb-3">
+          <label for="mensagem" class="form-label">Mensagem</label>
+          <textarea class="form-control" name="mensagem" id="mensagem" rows="2" required></textarea>
+        </div>
       </div>
       <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
         <button class="btn btn-primary" type="submit">Salvar</button>
       </div>
     </form>
