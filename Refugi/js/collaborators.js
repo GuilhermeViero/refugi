@@ -1,8 +1,45 @@
+import { signOut, getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+
 document.addEventListener('DOMContentLoaded', async () => {
   // Initialize variables
   const formColaborador = document.getElementById('formColaborador');
   const tabelaColaboradores = document.querySelector('.table tbody');
   let editingCollaboratorId = null;
+
+  const firebaseConfig = {
+      apiKey: "AIzaSyDUToDSB76WC06XnEMmgzGNUm8iS1_30J0",
+      authDomain: "refugi-app.firebaseapp.com",
+      projectId: "refugi-app",
+      storageBucket: "refugi-app.firebasestorage.app",
+      messagingSenderId: "676055353642",
+      appId: "1:676055353642:web:534a0f234dd32acbc4b653"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const profileName = document.querySelector('.profile-name');
+  if (profileName) {
+    profileName.textContent = "Carregando...";
+  }
+
+  onAuthStateChanged(auth, async (user) => {
+      if (user) {
+          const docRef = doc(db, "Profiles", user.uid);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists() && profileName) {
+              const data = docSnap.data();
+              profileName.textContent = data.nome || user.email;
+          } else if (profileName) {
+              profileName.textContent = user.email;
+          }
+      } else if (profileName) {
+          profileName.textContent = "Não autenticado";
+      }
+  });
   
   // Load collaborators when page loads
   await loadCollaborators();
@@ -177,4 +214,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
   });
+  document.getElementById('btnLogout').addEventListener('click', async (e) => {
+    e.preventDefault();
+    await signOut(auth);
+    window.location.href = "./index.html"; // ajuste o caminho se necessário
+});
 });
