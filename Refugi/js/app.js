@@ -2,6 +2,7 @@ import { signOut, getAuth, onAuthStateChanged } from "https://www.gstatic.com/fi
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 
+let max_capacity = 360;
 
 document.addEventListener("DOMContentLoaded", async () => {  
   const statusClassMap = {
@@ -22,9 +23,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
-const profileName = document.querySelector('.profile-name');
+  const profileName = document.querySelector('.profile-name');
+  const capacityTxt = document.querySelector('#capacityTxt');
   if (profileName) {
     profileName.textContent = "Carregando...";
+  }
+  if (capacityTxt) {
+    capacityTxt.textContent = "Carregando...";
   }
 
   onAuthStateChanged(auth, async (user) => {
@@ -34,12 +39,16 @@ const profileName = document.querySelector('.profile-name');
           if (docSnap.exists() && profileName) {
               const data = docSnap.data();
               profileName.textContent = data.nome || user.email;
+              max_capacity = data.capacidadeMaxima || 300;
           } else if (profileName) {
               profileName.textContent = user.email;
           }
       } else if (profileName) {
           profileName.textContent = "Não autenticado";
       }
+
+      // Load all data when page loads
+      await loadAllData();
   });
   // === SUPRIMENTOS ===
   const formSuprimento = document.getElementById("formSuprimento");
@@ -48,8 +57,7 @@ const profileName = document.querySelector('.profile-name');
   let linhaEditando = null;
   let editingSupplyId = null;
 
-  // Load all data when page loads
-  await loadAllData();
+  
 
   // === DATA LOADING ===
   async function loadAllData() {
@@ -349,8 +357,7 @@ const profileName = document.querySelector('.profile-name');
 
   // Update shelter capacity visualization
   function updateShelterCapacity(peopleCount) {
-    const capacityTotal = 360; // Total capacity
-    const occupiedPercentage = Math.round((peopleCount / capacityTotal) * 100);
+    const occupiedPercentage = Math.round((peopleCount / max_capacity) * 100);
     
     // Update donut chart
     const donutChart = document.querySelector('.donut-chart-container');
@@ -366,7 +373,7 @@ const profileName = document.querySelector('.profile-name');
       // Update count text
       const countText = document.querySelector('.card-body p.mt-3');
       if (countText) {
-        countText.innerHTML = `<strong>${peopleCount}</strong> / ${capacityTotal} pessoas`;
+        countText.innerHTML = `<strong>${peopleCount}</strong> / ${max_capacity} pessoas`;
       }
     }
   }
